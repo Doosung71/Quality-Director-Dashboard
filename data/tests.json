@@ -1,0 +1,200 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "lastUpdated": "2026-05-13",
+    "note": "설비 기준 시험 현황. equipmentId는 facility.json equipment[].id와 일치."
+  },
+  "tests": [
+    {
+      "id": "test-001",
+      "equipmentId": "gumi-dc1-eq-001",
+      "projectName": "HVDC 525kV XLPE 인증",
+      "sampleType": "cable",
+      "sampleDescription": "525kV XLPE 1600mm² DC 케이블",
+      "plannedStart": "2026-03-01",
+      "plannedEnd": "2026-07-31",
+      "actualStart": "2026-03-05",
+      "actualEnd": null,
+      "status": "시험중",
+      "progress": 55,
+      "logs": [
+        { "date": "2026-03-05", "note": "시험 개시 — 시료 반입 완료", "progress": 0 },
+        { "date": "2026-03-20", "note": "Pre-qualification: 부분방전 1회차 완료", "progress": 15 },
+        { "date": "2026-04-10", "note": "Load cycle 시험 진입 (총 20사이클 예정)", "progress": 30 },
+        { "date": "2026-05-01", "note": "Load cycle 12사이클 완료", "progress": 55 }
+      ]
+    },
+    {
+      "id": "test-002",
+      "equipmentId": "gumi-dc1-eq-002",
+      "projectName": "HVDC 525kV XLPE 인증",
+      "sampleType": "cable",
+      "sampleDescription": "525kV XLPE 1600mm² DC 케이블 — 임펄스",
+      "plannedStart": "2026-07-01",
+      "plannedEnd": "2026-08-15",
+      "actualStart": null,
+      "actualEnd": null,
+      "status": "준비중",
+      "progress": 0,
+      "logs": []
+    },
+    {
+      "id": "test-003",
+      "equipmentId": "gumi-ac1-eq-001",
+      "projectName": "345kV XLPE 접속재 IEC 인증",
+      "sampleType": "accessory",
+      "sampleDescription": "345kV XLPE 1200mm² 프리몰드 접속재",
+      "plannedStart": "2026-04-01",
+      "plannedEnd": "2026-06-30",
+      "actualStart": "2026-04-03",
+      "actualEnd": null,
+      "status": "지연",
+      "progress": 40,
+      "logs": [
+        { "date": "2026-04-03", "note": "시험 개시", "progress": 0 },
+        { "date": "2026-04-25", "note": "AC 내전압 1회차 완료", "progress": 20 },
+        { "date": "2026-05-02", "note": "시료 이상 발견 — 제조사 확인 중 (시험 중단)", "progress": 40 }
+      ]
+    },
+    {
+      "id": "test-004",
+      "equipmentId": "gumi-hv-eq-003",
+      "projectName": "500kV XLPE 형식시험 (갱신)",
+      "sampleType": "cable",
+      "sampleDescription": "500kV XLPE 800mm² 케이블",
+      "plannedStart": "2026-02-01",
+      "plannedEnd": "2026-04-30",
+      "actualStart": "2026-02-05",
+      "actualEnd": "2026-05-02",
+      "status": "완료",
+      "progress": 100,
+      "logs": [
+        { "date": "2026-02-05", "note": "시험 개시", "progress": 0 },
+        { "date": "2026-03-01", "note": "AC 내전압 완료", "progress": 40 },
+        { "date": "2026-04-10", "note": "부분방전·열안정성 완료", "progress": 75 },
+        { "date": "2026-05-02", "note": "전체 시험 완료 — 성적서 발행 예정", "progress": 100 }
+      ]
+    },
+    {
+      "id": "test-005",
+      "equipmentId": "donghae-dc1-eq-001",
+      "projectName": "해저 HVDC 320kV 개발시험",
+      "sampleType": "cable",
+      "sampleDescription": "320kV XLPE 1000mm² 해저케이블",
+      "plannedStart": "2026-04-15",
+      "plannedEnd": "2026-09-30",
+      "actualStart": "2026-04-20",
+      "actualEnd": null,
+      "status": "시험중",
+      "progress": 20,
+      "logs": [
+        { "date": "2026-04-20", "note": "시험 개시 — 수압조건 셋업 완료", "progress": 0 },
+        { "date": "2026-05-08", "note": "Pre-qualification 부분방전 완료", "progress": 20 }
+      ]
+    },
+    {
+      "id": "test-006",
+      "equipmentId": "donghae-dc1-eq-002",
+      "projectName": "해저 HVDC 320kV 개발시험",
+      "sampleType": "cable",
+      "sampleDescription": "320kV XLPE 1000mm² 해저케이블 — 임펄스",
+      "plannedStart": "2026-08-01",
+      "plannedEnd": "2026-09-15",
+      "actualStart": null,
+      "actualEnd": null,
+      "status": "준비중",
+      "progress": 0,
+      "logs": []
+    },
+    {
+      "id": "test-007",
+      "equipmentId": "donghae-sr1-eq-001",
+      "projectName": "154kV XLPE 접속재 형식시험",
+      "sampleType": "accessory",
+      "sampleDescription": "154kV XLPE 400mm² 열수축 접속재",
+      "plannedStart": "2026-05-01",
+      "plannedEnd": "2026-06-15",
+      "actualStart": "2026-05-06",
+      "actualEnd": null,
+      "status": "시험중",
+      "progress": 10,
+      "logs": [
+        { "date": "2026-05-06", "note": "시험 개시 — 시료 접속 작업 완료", "progress": 0 },
+        { "date": "2026-05-12", "note": "AC 내전압 1회차 진행 중", "progress": 10 }
+      ]
+    },
+    {
+      "id": "test-008",
+      "equipmentId": "donghae-sr2-eq-001",
+      "projectName": "275kV XLPE 양산 품질시험",
+      "sampleType": "cable",
+      "sampleDescription": "275kV XLPE 1600mm² 케이블",
+      "plannedStart": "2026-05-10",
+      "plannedEnd": "2026-05-31",
+      "actualStart": "2026-05-10",
+      "actualEnd": null,
+      "status": "시험중",
+      "progress": 5,
+      "logs": [
+        { "date": "2026-05-10", "note": "시험 개시", "progress": 0 },
+        { "date": "2026-05-12", "note": "셋업 완료, 본 시험 진입", "progress": 5 }
+      ]
+    },
+    {
+      "id": "test-009",
+      "equipmentId": "gumi-out-eq-001",
+      "projectName": "154kV XLPE 케이블 옥외 장기내압",
+      "sampleType": "cable",
+      "sampleDescription": "154kV XLPE 325mm² 케이블 (드럼 2릴)",
+      "plannedStart": "2026-06-01",
+      "plannedEnd": "2026-08-31",
+      "actualStart": null,
+      "actualEnd": null,
+      "status": "준비중",
+      "progress": 0,
+      "logs": []
+    },
+    {
+      "id": "test-010",
+      "equipmentId": "donghae-xxl-eq-001",
+      "projectName": "500kV XLPE 해저케이블 XXL 형식시험",
+      "sampleType": "cable",
+      "sampleDescription": "500kV XLPE 2500mm² 해저케이블 (300m)",
+      "plannedStart": "2026-07-01",
+      "plannedEnd": "2026-09-30",
+      "actualStart": null,
+      "actualEnd": null,
+      "status": "준비중",
+      "progress": 0,
+      "logs": []
+    },
+    {
+      "id": "test-011",
+      "equipmentId": "gumi-dc2-eq-001",
+      "projectName": "HVDC 320kV 접속재 개발시험",
+      "sampleType": "accessory",
+      "sampleDescription": "320kV XLPE 1000mm² DC 프리몰드 접속재",
+      "plannedStart": "2026-05-15",
+      "plannedEnd": "2026-07-31",
+      "actualStart": null,
+      "actualEnd": null,
+      "status": "준비중",
+      "progress": 0,
+      "logs": []
+    },
+    {
+      "id": "test-012",
+      "equipmentId": "gumi-dc2-eq-001",
+      "projectName": "HVDC 200kV 긴급 사전검증",
+      "sampleType": "cable",
+      "sampleDescription": "200kV XLPE 500mm² DC 케이블 (병렬 진행)",
+      "plannedStart": "2026-05-20",
+      "plannedEnd": "2026-06-30",
+      "actualStart": null,
+      "actualEnd": null,
+      "status": "준비중",
+      "progress": 0,
+      "logs": []
+    }
+  ]
+}
