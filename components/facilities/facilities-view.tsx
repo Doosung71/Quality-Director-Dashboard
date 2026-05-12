@@ -355,7 +355,7 @@ function GanttChart({ tests, equipment }: { tests: Test[]; equipment: Equipment[
                     {/* 오늘 기준선 */}
                     <div
                       className="absolute top-2 bottom-2 w-px bg-red-400 opacity-60"
-                      style={{ left: `${dateToPct("2026-05-13")}%` }}
+                      style={{ left: `${dateToPct(new Date().toISOString().slice(0, 10))}%` }}
                     />
                   </div>
                 </div>
