@@ -1,0 +1,395 @@
+{
+  "timestamp": "2026-05-12T06:03:11.591Z",
+  "reason": "compaction",
+  "status": {
+    "version": "2.0",
+    "lastUpdated": "2026-05-12T05:30:30.020Z",
+    "activeFeatures": [
+      "layout",
+      "(dashboard)",
+      "quality-director-dashboard",
+      "facilities",
+      "claims",
+      "hr",
+      "intelligence",
+      "data"
+    ],
+    "primaryFeature": "layout",
+    "features": {
+      "layout": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-05-12T01:31:28.994Z",
+          "lastUpdated": "2026-05-12T01:31:31.209Z"
+        },
+        "lastFile": "C:\\Dev\\quality-director-dashboard\\components\\layout\\header.tsx"
+      },
+      "(dashboard)": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-05-12T01:31:35.459Z",
+          "lastUpdated": "2026-05-12T01:31:54.207Z"
+        },
+        "lastFile": "C:\\Dev\\quality-director-dashboard\\app\\(dashboard)\\page.tsx"
+      },
+      "quality-director-dashboard": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-05-12T01:31:49.454Z",
+          "lastUpdated": "2026-05-12T02:37:49.953Z"
+        },
+        "lastFile": "c:\\Dev\\quality-director-dashboard\\types\\test.ts"
+      },
+      "facilities": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-05-12T01:31:55.545Z",
+          "lastUpdated": "2026-05-12T05:28:37.023Z"
+        },
+        "lastFile": "c:\\Dev\\quality-director-dashboard\\app\\(dashboard)\\facilities\\page.tsx"
+      },
+      "claims": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-05-12T01:31:56.274Z",
+          "lastUpdated": "2026-05-12T01:31:56.274Z"
+        },
+        "lastFile": "C:\\Dev\\quality-director-dashboard\\app\\(dashboard)\\claims\\page.tsx"
+      },
+      "hr": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-05-12T01:31:58.628Z",
+          "lastUpdated": "2026-05-12T01:31:58.628Z"
+        },
+        "lastFile": "C:\\Dev\\quality-director-dashboard\\app\\(dashboard)\\hr\\page.tsx"
+      },
+      "intelligence": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-05-12T01:31:59.262Z",
+          "lastUpdated": "2026-05-12T01:31:59.262Z"
+        },
+        "lastFile": "C:\\Dev\\quality-director-dashboard\\app\\(dashboard)\\intelligence\\page.tsx"
+      },
+      "data": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-05-12T05:28:25.780Z",
+          "lastUpdated": "2026-05-12T05:30:30.020Z"
+        },
+        "lastFile": "c:\\Dev\\quality-director-dashboard\\data\\tests.data.ts"
+      }
+    },
+    "pipeline": {
+      "currentPhase": 1,
+      "level": "Dynamic",
+      "phaseHistory": []
+    },
+    "session": {
+      "startedAt": "2026-05-07T08:59:40.960Z",
+      "onboardingCompleted": false,
+      "lastActivity": "2026-05-12T05:30:30.020Z"
+    },
+    "history": [
+      {
+        "timestamp": "2026-05-12T01:31:28.994Z",
+        "feature": "layout",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:31:31.209Z",
+        "feature": "layout",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:31:35.459Z",
+        "feature": "(dashboard)",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:31:49.454Z",
+        "feature": "quality-director-dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:31:54.207Z",
+        "feature": "(dashboard)",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:31:55.545Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:31:56.274Z",
+        "feature": "claims",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:31:58.628Z",
+        "feature": "hr",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:31:59.262Z",
+        "feature": "intelligence",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:39:24.815Z",
+        "feature": "quality-director-dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:40:15.957Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:40:21.982Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:41:02.081Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:51:22.764Z",
+        "feature": "quality-director-dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:51:33.281Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:51:40.451Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:51:50.284Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:51:55.707Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:52:03.987Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:52:13.972Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T01:52:24.456Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:01:09.204Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:01:16.077Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:03:01.186Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:37:49.953Z",
+        "feature": "quality-director-dashboard",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:39:56.367Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:40:05.126Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:40:13.018Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:40:41.113Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:41:06.333Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:41:11.597Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:41:17.180Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:41:29.420Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:41:56.793Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:42:15.287Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:42:47.512Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T02:43:02.057Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T05:27:55.159Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T05:28:25.780Z",
+        "feature": "data",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T05:28:27.039Z",
+        "feature": "data",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T05:28:37.023Z",
+        "feature": "facilities",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T05:30:28.607Z",
+        "feature": "data",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-05-12T05:30:30.020Z",
+        "feature": "data",
+        "phase": "do",
+        "action": "updated"
+      }
+    ]
+  }
+}

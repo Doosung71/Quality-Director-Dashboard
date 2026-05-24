@@ -3,31 +3,14 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { FacilityData, SiteId, Equipment, TestHall, TestYard } from "@/types/facility";
-import type { Test, TestsData, TestStatus } from "@/types/test";
+import type { Test, TestsData, TestStatus, TestCategory } from "@/types/test";
+import { EquipmentTable } from "./equipment-table";
+import { computeStatus, getTodayLocalStr } from "@/lib/facilities-utils";
 
 type AnySpace = TestHall | TestYard;
-type ComputedStatus = "new" | "normal" | "aging" | "planned";
-
-const CURRENT_YEAR = 2026;
-
-function computeStatus(eq: Equipment): ComputedStatus {
-  if (eq.status === "planned") return "planned";
-  const age = CURRENT_YEAR - eq.yearIntroduced;
-  if (age > 20) return "aging";
-  if (age > 10) return "normal";
-  return "new";
-}
 
 function getSpaceEquipment(data: FacilityData, spaceId: string): Equipment[] {
   return data.equipment.filter((e) => e.hallId === spaceId || e.yardId === spaceId);
-}
-
-function formatSpec(spec: Record<string, string>): string {
-  const parts: string[] = [];
-  if (spec.voltage) parts.push(spec.voltage);
-  if (spec.current) parts.push(spec.current);
-  if (spec.energy) parts.push(spec.energy);
-  return parts.join(" / ");
 }
 
 // 2026년 기준 날짜 → 가로 위치 % (간트 차트용)
@@ -44,6 +27,13 @@ function getEquipmentTests(tests: Test[], equipmentId: string): Test[] {
   return tests.filter((t) => t.equipmentId === equipmentId);
 }
 
+// 인증시험 종류별 예상 소요기간 (준비 포함)
+const CERT_DURATION: Partial<Record<TestCategory, string>> = {
+  Type: "~3개월",
+  EQ:   "~6개월",
+  PQ:   "~14개월",
+};
+
 // ─── Status & Type badges ────────────────────────────────────────────────────
 
 function HallStatusBadge({ status }: { status: string }) {
@@ -54,21 +44,6 @@ function HallStatusBadge({ status }: { status: string }) {
   return (
     <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", style)}>
       {status}
-    </span>
-  );
-}
-
-function EquipStatusBadge({ status }: { status: ComputedStatus }) {
-  const map: Record<ComputedStatus, { label: string; style: string }> = {
-    new:     { label: "신규",     style: "bg-blue-50 text-blue-700 ring-blue-200" },
-    normal:  { label: "정상",     style: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
-    aging:   { label: "노후",     style: "bg-red-50 text-red-700 ring-red-200" },
-    planned: { label: "도입예정", style: "bg-slate-50 text-slate-600 ring-slate-200" },
-  };
-  const { label, style } = map[status];
-  return (
-    <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset", style)}>
-      {label}
     </span>
   );
 }
@@ -95,20 +70,38 @@ function TestStatusBadge({ status }: { status: TestStatus }) {
   );
 }
 
+function TestCategoryChip({ category }: { category: TestCategory }) {
+  const map: Record<TestCategory, string> = {
+    Type: "bg-purple-50 text-purple-700 ring-purple-200",
+    EQ:   "bg-orange-50 text-orange-700 ring-orange-200",
+    PQ:   "bg-rose-50 text-rose-700 ring-rose-200",
+    양산:  "bg-teal-50 text-teal-700 ring-teal-200",
+    개발:  "bg-indigo-50 text-indigo-700 ring-indigo-200",
+  };
+  return (
+    <span className={cn("inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset", map[category])}>
+      {category}
+    </span>
+  );
+}
+
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 
 interface KpiItem { label: string; value: number; color: string }
+interface KpiBarSegment { color: string; pct: number; label: string }
 
 function KpiCard({
   title,
   main,
   mainColor = "text-slate-800",
   items,
+  bar,
 }: {
   title: string;
   main: string;
   mainColor?: string;
   items: KpiItem[];
+  bar?: KpiBarSegment[];
 }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 px-5 py-4">
@@ -122,146 +115,108 @@ function KpiCard({
           </div>
         ))}
       </div>
+      {bar && bar.length > 0 && (
+        <div
+          className="flex h-1.5 w-full overflow-hidden rounded-full mt-3"
+          role="img"
+          aria-label={bar.map((s) => `${s.label}: ${Math.round(s.pct)}%`).join(", ")}
+        >
+          {bar.map((s) => (
+            <div key={s.label} className={s.color} style={{ width: `${s.pct}%` }} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
 // ─── Hall list row ────────────────────────────────────────────────────────────
 
+interface SpaceStatusCounts { new: number; normal: number; aging: number; planned: number }
+
 function SpaceRow({
   space,
   equipCount,
   agingCount,
+  statusCounts,
   selected,
+  checked,
+  isOutdoor,
+  onCheck,
   onClick,
 }: {
   space: AnySpace;
   equipCount: number;
   agingCount: number;
+  statusCounts: SpaceStatusCounts;
   selected: boolean;
+  checked: boolean;
+  isOutdoor: boolean;
+  onCheck: () => void;
   onClick: () => void;
 }) {
   return (
-    <button
-      onClick={onClick}
+    <div
       className={cn(
-        "w-full text-left px-4 py-3 border-b border-slate-100 last:border-0 transition-colors",
+        "flex items-start border-b border-slate-100 last:border-0 transition-colors",
         selected ? "bg-blue-50" : "hover:bg-slate-50"
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <p className={cn("text-sm leading-snug", selected ? "font-medium text-blue-700" : "text-slate-700")}>
-          {space.name}
-        </p>
-        <HallStatusBadge status={space.status} />
-      </div>
-      <div className="flex items-center gap-2 mt-1.5">
-        <TypeChip type={space.type} />
-        <span className="text-xs text-slate-400">{space.purpose}</span>
-        <span className="ml-auto text-xs text-slate-400">
-          설비 {equipCount}개
-          {agingCount > 0 && (
-            <span className="ml-1 text-red-500">· 노후 {agingCount}</span>
+      <button
+        onClick={(e) => { e.stopPropagation(); onCheck(); }}
+        className="pl-3 pr-1 py-3 shrink-0 flex items-start"
+        aria-label="시험 현황 필터"
+      >
+        <span className={cn(
+          "mt-0.5 w-4 h-4 rounded border flex items-center justify-center transition-colors",
+          checked ? "bg-blue-600 border-blue-600" : "border-slate-300 bg-white"
+        )}>
+          {checked && (
+            <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 12 12">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5" />
+            </svg>
           )}
         </span>
-      </div>
-    </button>
-  );
-}
-
-// ─── Equipment table ──────────────────────────────────────────────────────────
-
-function EquipmentTable({ equipment, tests }: { equipment: Equipment[]; tests: Test[] }) {
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="bg-slate-50 border-b border-slate-200">
-            <th className="text-left px-4 py-2.5 text-xs font-medium text-slate-500 whitespace-nowrap">설비명</th>
-            <th className="text-left px-3 py-2.5 text-xs font-medium text-slate-500 whitespace-nowrap">유형</th>
-            <th className="text-left px-3 py-2.5 text-xs font-medium text-slate-500 whitespace-nowrap">규격</th>
-            <th className="text-left px-3 py-2.5 text-xs font-medium text-slate-500 whitespace-nowrap">제조사</th>
-            <th className="text-right px-3 py-2.5 text-xs font-medium text-slate-500 whitespace-nowrap">도입</th>
-            <th className="text-right px-3 py-2.5 text-xs font-medium text-slate-500 whitespace-nowrap">사용연수</th>
-            <th className="text-right px-3 py-2.5 text-xs font-medium text-slate-500 whitespace-nowrap">대수</th>
-            <th className="text-left px-3 py-2.5 text-xs font-medium text-slate-500 whitespace-nowrap">상태</th>
-            <th className="text-left px-3 py-2.5 text-xs font-medium text-slate-500 whitespace-nowrap">시험 현황</th>
-            <th className="text-left px-4 py-2.5 text-xs font-medium text-slate-500">비고</th>
-          </tr>
-        </thead>
-        <tbody>
-          {equipment.map((eq) => {
-            const eqTests = getEquipmentTests(tests, eq.id);
-            return (
-              <tr key={eq.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                <td className="px-4 py-2.5 font-medium text-slate-700 whitespace-nowrap">{eq.name}</td>
-                <td className="px-3 py-2.5">
-                  <TypeChip type={eq.type} />
-                </td>
-                <td className="px-3 py-2.5 text-slate-600 whitespace-nowrap font-mono text-xs">
-                  {formatSpec(eq.spec)}
-                </td>
-                <td className="px-3 py-2.5 text-slate-600 whitespace-nowrap">
-                  {eq.maker}
-                  {eq.makerCountry && (
-                    <span className="ml-1 text-slate-400 text-xs">({eq.makerCountry})</span>
-                  )}
-                </td>
-                <td className="px-3 py-2.5 text-slate-500 text-right whitespace-nowrap">{eq.yearIntroduced}</td>
-                <td className="px-3 py-2.5 text-right whitespace-nowrap">
-                  {(() => {
-                    const s = computeStatus(eq);
-                    if (s === "planned") return <span className="text-slate-300">—</span>;
-                    const colorMap: Record<string, string> = {
-                      new:    "text-blue-600",
-                      normal: "text-emerald-600",
-                      aging:  "text-red-600",
-                    };
-                    return <span className={cn("font-medium", colorMap[s])}>{CURRENT_YEAR - eq.yearIntroduced}년</span>;
-                  })()}
-                </td>
-                <td className="px-3 py-2.5 text-slate-700 text-right font-medium">{eq.quantity}</td>
-                <td className="px-3 py-2.5">
-                  <EquipStatusBadge status={computeStatus(eq)} />
-                </td>
-                <td className="px-3 py-2.5">
-                  {eqTests.length === 0 ? (
-                    <span className="text-slate-300 text-xs">—</span>
-                  ) : (
-                    <div className="space-y-1.5">
-                      {eqTests.map((t) => (
-                        <div key={t.id} className="flex items-center gap-1.5 min-w-[180px]">
-                          <TestStatusBadge status={t.status} />
-                          <div className="w-16 h-1.5 rounded-full bg-slate-100 overflow-hidden shrink-0">
-                            <div
-                              className={cn("h-full rounded-full", {
-                                "bg-blue-400":    t.status === "시험중",
-                                "bg-emerald-400": t.status === "완료",
-                                "bg-red-400":     t.status === "지연",
-                                "bg-slate-300":   t.status === "준비중",
-                              })}
-                              style={{ width: `${t.progress}%` }}
-                            />
-                          </div>
-                          <span className="text-xs text-slate-500 truncate max-w-[120px]" title={t.projectName}>
-                            {t.projectName}
-                          </span>
-                        </div>
-                      ))}
-                      {eqTests.length > 1 && (
-                        <span className="text-xs text-slate-400">병렬 {eqTests.length}건</span>
-                      )}
-                    </div>
-                  )}
-                </td>
-                <td className="px-4 py-2.5 text-slate-400 text-xs max-w-[200px] truncate" title={eq.notes}>
-                  {eq.notes || "—"}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      </button>
+      <button onClick={onClick} className="flex-1 text-left px-2 py-3 pr-4">
+        <div className="flex items-start justify-between gap-2">
+          <p className={cn("text-sm leading-snug", selected ? "font-medium text-blue-700" : "text-slate-700")}>
+            {space.name}
+          </p>
+          <HallStatusBadge status={space.status} />
+        </div>
+        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+          <TypeChip type={space.type} />
+          {isOutdoor && (
+            <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-amber-50 text-amber-700">
+              옥외
+            </span>
+          )}
+          {space.purpose === "인증시험/양산시험" && (
+            <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-violet-50 text-violet-700">
+              복합
+            </span>
+          )}
+          <span className="ml-auto text-xs text-slate-400">
+            설비 {equipCount}개
+            {agingCount > 0 && (
+              <span className="ml-1 text-red-500">· 노후 {agingCount}</span>
+            )}
+          </span>
+        </div>
+        {equipCount > 0 && (
+          <div
+            className="flex h-1 w-full overflow-hidden rounded-full mt-2"
+            role="img"
+            aria-label={`신규 ${statusCounts.new}, 정상 ${statusCounts.normal}, 노후 ${statusCounts.aging}, 도입예정 ${statusCounts.planned}`}
+          >
+            {statusCounts.new > 0 && <div className="bg-blue-400" style={{ width: `${(statusCounts.new / equipCount) * 100}%` }} />}
+            {statusCounts.normal > 0 && <div className="bg-emerald-400" style={{ width: `${(statusCounts.normal / equipCount) * 100}%` }} />}
+            {statusCounts.aging > 0 && <div className="bg-red-400" style={{ width: `${(statusCounts.aging / equipCount) * 100}%` }} />}
+            {statusCounts.planned > 0 && <div className="bg-slate-200" style={{ width: `${(statusCounts.planned / equipCount) * 100}%` }} />}
+          </div>
+        )}
+      </button>
     </div>
   );
 }
@@ -270,6 +225,12 @@ function EquipmentTable({ equipment, tests }: { equipment: Equipment[]; tests: T
 
 const MONTHS = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
 
+// 월 경계선 위치 (2월~12월 시작점 %)
+const MONTH_GRID_PCTS = [
+  "2026-02-01","2026-03-01","2026-04-01","2026-05-01","2026-06-01",
+  "2026-07-01","2026-08-01","2026-09-01","2026-10-01","2026-11-01","2026-12-01",
+].map(dateToPct);
+
 const STATUS_BAR_COLOR: Record<TestStatus, string> = {
   "준비중": "bg-slate-300",
   "시험중": "bg-blue-400",
@@ -277,29 +238,47 @@ const STATUS_BAR_COLOR: Record<TestStatus, string> = {
   "지연":   "bg-red-400",
 };
 
-function GanttChart({ tests, equipment }: { tests: Test[]; equipment: Equipment[] }) {
+function GanttChart({ tests, equipment, filteredCount }: { tests: Test[]; equipment: Equipment[]; filteredCount: number }) {
   const testsWithEq = tests.filter((t) => equipment.some((e) => e.id === t.equipmentId));
   if (testsWithEq.length === 0) return null;
 
   const equipsWithTests = equipment.filter((e) => tests.some((t) => t.equipmentId === e.id));
+  const todayStr = getTodayLocalStr();
+  const todayPct = dateToPct(todayStr);
+  const todayLabel = todayStr.slice(5).replace("-", "/");
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       <div className="px-5 py-3 border-b border-slate-200">
-        <h3 className="text-sm font-semibold text-slate-700">시험 일정 현황 (2026)</h3>
-        <p className="text-xs text-slate-400 mt-0.5">계획 기간 대비 실제 진행률. 진행 중인 시험장 설비 기준.</p>
+        <h3 className="text-sm font-semibold text-slate-700">인증시험 일정 현황 (2026)</h3>
+        <p className="text-xs text-slate-400 mt-0.5">
+          계획 기간 대비 실제 진행률.{" "}
+          {filteredCount > 0
+            ? <span className="text-blue-500 font-medium">{filteredCount}개 시험장 필터 중</span>
+            : "전체 설비 기준."}
+          <span className="ml-3 text-purple-500">
+            Type ~3개월 · EQ ~6개월 · PQ ~14개월
+          </span>
+        </p>
       </div>
       <div className="overflow-x-auto">
         <div className="min-w-[800px]">
           {/* 월 헤더 */}
           <div className="flex border-b border-slate-100">
-            <div className="w-64 shrink-0 px-4 py-2 text-xs text-slate-400">설비 / 프로젝트</div>
-            <div className="flex-1 flex">
+            <div className="w-72 shrink-0 px-4 py-2 text-xs text-slate-400">설비 / 시험 종류</div>
+            <div className="flex-1 flex relative">
               {MONTHS.map((m) => (
                 <div key={m} className="flex-1 text-center text-xs text-slate-400 py-2 border-l border-slate-100 first:border-0">
                   {m}
                 </div>
               ))}
+              {/* 오늘 날짜 라벨 — 헤더에 고정, 반복 없음 */}
+              <span
+                className="absolute bottom-0.5 text-[9px] font-semibold text-red-500 leading-none pointer-events-none whitespace-nowrap -translate-x-1/2"
+                style={{ left: `${todayPct}%` }}
+              >
+                {todayLabel}
+              </span>
             </div>
           </div>
 
@@ -310,6 +289,7 @@ function GanttChart({ tests, equipment }: { tests: Test[]; equipment: Equipment[
               const plannedStartPct = dateToPct(t.plannedStart);
               const plannedEndPct   = dateToPct(t.plannedEnd);
               const plannedWidthPct = Math.max(0.5, plannedEndPct - plannedStartPct);
+              const duration = CERT_DURATION[t.testCategory];
 
               return (
                 <div
@@ -317,21 +297,33 @@ function GanttChart({ tests, equipment }: { tests: Test[]; equipment: Equipment[
                   className={cn("flex items-center border-b border-slate-50 last:border-0 hover:bg-slate-50")}
                 >
                   {/* 좌측 라벨 */}
-                  <div className="w-64 shrink-0 px-4 py-2.5">
+                  <div className="w-72 shrink-0 px-4 py-2.5">
                     {idx === 0 && (
                       <p className="text-xs font-medium text-slate-700 truncate">{eq.name}</p>
                     )}
-                    <div className="flex items-center gap-1.5 mt-0.5">
+                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                       <TestStatusBadge status={t.status} />
-                      <span className="text-xs text-slate-500 truncate" title={t.projectName}>
-                        {t.projectName}
-                      </span>
+                      <TestCategoryChip category={t.testCategory} />
+                      {duration && (
+                        <span className="text-[10px] text-slate-400 font-medium">{duration}</span>
+                      )}
                     </div>
-                    <p className="text-xs text-slate-400 mt-0.5 truncate">{t.sampleDescription}</p>
+                    <p className="text-xs text-slate-500 mt-0.5 truncate" title={t.projectName}>
+                      {t.projectName}
+                    </p>
+                    <p className="text-xs text-slate-400 truncate">{t.sampleDescription}</p>
                   </div>
 
                   {/* 우측 간트 영역 */}
-                  <div className="flex-1 relative h-12 py-4 px-1">
+                  <div className="flex-1 relative h-14 py-4 px-1">
+                    {/* 월 그리드라인 */}
+                    {MONTH_GRID_PCTS.map((pct, i) => (
+                      <div
+                        key={i}
+                        className="absolute top-0 bottom-0 w-px bg-slate-100 pointer-events-none"
+                        style={{ left: `${pct}%` }}
+                      />
+                    ))}
                     {/* 계획 바 (회색 배경) */}
                     <div
                       className="absolute top-3.5 h-5 rounded bg-slate-100 border border-slate-200 overflow-hidden"
@@ -354,8 +346,8 @@ function GanttChart({ tests, equipment }: { tests: Test[]; equipment: Equipment[
                     )}
                     {/* 오늘 기준선 */}
                     <div
-                      className="absolute top-2 bottom-2 w-px bg-red-400 opacity-60"
-                      style={{ left: `${dateToPct(new Date().toISOString().slice(0, 10))}%` }}
+                      className="absolute top-0 bottom-0 w-0.5 bg-red-400"
+                      style={{ left: `${todayPct}%` }}
                     />
                   </div>
                 </div>
@@ -373,13 +365,28 @@ function GanttChart({ tests, equipment }: { tests: Test[]; equipment: Equipment[
 export function FacilitiesView({ data, testsData }: { data: FacilityData; testsData: TestsData }) {
   const tests = testsData.tests;
   const [activeSite, setActiveSite] = useState<SiteId>("gumi");
-  const [selectedSpaceId, setSelectedSpaceId] = useState<string | null>(null);
+  const [selectedSpaceId, setSelectedSpaceId] = useState<string | null>(() => {
+    const gumiSpaces = [...data.testHalls, ...data.testYards].filter((s) => s.siteId === "gumi");
+    return gumiSpaces[0]?.id ?? null;
+  });
+  const [checkedSpaceIds, setCheckedSpaceIds] = useState<Set<string>>(new Set());
+
+  const toggleChecked = (id: string) => {
+    setCheckedSpaceIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   // KPI 계산
   const allSpaces = [...data.testHalls, ...data.testYards];
   const totalSpaces = allSpaces.length;
   const activeSpaces = allSpaces.filter((s) => s.status === "가동중").length;
   const constructingSpaces = allSpaces.filter((s) => s.status === "건축중").length;
+  const certSpacesAll = allSpaces.filter((s) => s.purpose.includes("인증")).length;
+  const prodSpacesAll = allSpaces.filter((s) => s.purpose === "양산시험").length;
 
   const totalEquip = data.equipment.length;
   const newEquip     = data.equipment.filter((e) => computeStatus(e) === "new").length;
@@ -389,20 +396,33 @@ export function FacilitiesView({ data, testsData }: { data: FacilityData; testsD
   const agingWithReplacement = data.equipment.filter((e) => computeStatus(e) === "aging" && e.replacedBy).length;
   const agingNoAction = agingEquip - agingWithReplacement;
 
-  // 사이트별 필터
+  // 사이트별 필터 및 인증/양산 그룹 분류
   const siteHalls = data.testHalls.filter((h) => h.siteId === activeSite);
   const siteYards = data.testYards.filter((y) => y.siteId === activeSite);
+  const allSiteSpaces: AnySpace[] = [...siteHalls, ...siteYards];
+  const yardIds = new Set(data.testYards.map((y) => y.id));
+
+  const certSiteSpaces = allSiteSpaces.filter((s) => s.purpose.includes("인증"));
+  const prodSiteSpaces = allSiteSpaces.filter((s) => s.purpose === "양산시험");
 
   // 선택된 공간
   const selectedSpace = selectedSpaceId ? allSpaces.find((s) => s.id === selectedSpaceId) ?? null : null;
   const selectedEquipment = selectedSpaceId ? getSpaceEquipment(data, selectedSpaceId) : [];
+  const selectedIsCert = selectedSpace?.purpose.includes("인증") ?? false;
+  const selectedIsProdOnly = selectedSpace?.purpose === "양산시험";
 
   const handleSiteChange = (site: SiteId) => {
     setActiveSite(site);
-    if (selectedSpace && selectedSpace.siteId !== site) {
-      setSelectedSpaceId(null);
-    }
+    const siteSpaces = [...data.testHalls, ...data.testYards].filter((s) => s.siteId === site);
+    setSelectedSpaceId(siteSpaces[0]?.id ?? null);
   };
+
+  const ganttEquipment = checkedSpaceIds.size === 0
+    ? data.equipment
+    : data.equipment.filter((e) =>
+        (e.hallId != null && checkedSpaceIds.has(e.hallId)) ||
+        (e.yardId != null && checkedSpaceIds.has(e.yardId))
+      );
 
   return (
     <div className="space-y-5">
@@ -412,8 +432,10 @@ export function FacilitiesView({ data, testsData }: { data: FacilityData; testsD
           title="시험장 현황"
           main={`${totalSpaces}개`}
           items={[
-            { label: "가동중", value: activeSpaces, color: "text-emerald-600" },
-            { label: "건축중", value: constructingSpaces, color: "text-amber-600" },
+            { label: "인증",     value: certSpacesAll,     color: "text-purple-600" },
+            { label: "양산",     value: prodSpacesAll,     color: "text-teal-600" },
+            { label: "가동중",   value: activeSpaces,       color: "text-emerald-600" },
+            { label: "건축중",   value: constructingSpaces, color: "text-amber-600" },
           ]}
         />
         <KpiCard
@@ -425,6 +447,12 @@ export function FacilitiesView({ data, testsData }: { data: FacilityData; testsD
             { label: "노후",     value: agingEquip,   color: "text-red-600" },
             { label: "도입예정", value: plannedEquip, color: "text-slate-500" },
           ]}
+          bar={totalEquip > 0 ? [
+            { color: "bg-blue-400",    pct: (newEquip / totalEquip) * 100,     label: "신규" },
+            { color: "bg-emerald-400", pct: (normalEquip / totalEquip) * 100,  label: "정상" },
+            { color: "bg-red-400",     pct: (agingEquip / totalEquip) * 100,   label: "노후" },
+            { color: "bg-slate-200",   pct: (plannedEquip / totalEquip) * 100, label: "도입예정" },
+          ] : undefined}
         />
         <KpiCard
           title="노후 설비"
@@ -432,7 +460,7 @@ export function FacilitiesView({ data, testsData }: { data: FacilityData; testsD
           mainColor="text-red-600"
           items={[
             { label: "교체 진행", value: agingWithReplacement, color: "text-amber-600" },
-            { label: "미착수", value: agingNoAction, color: "text-red-500" },
+            { label: "미착수",   value: agingNoAction,         color: "text-red-500" },
           ]}
         />
       </div>
@@ -459,43 +487,61 @@ export function FacilitiesView({ data, testsData }: { data: FacilityData; testsD
             ))}
           </div>
 
-          {/* 리스트 */}
+          {/* 리스트: 인증 / 양산 그룹 */}
           <div className="flex-1 overflow-y-auto">
-            {siteHalls.length > 0 && (
+            {certSiteSpaces.length > 0 && (
               <>
-                <p className="px-4 pt-3 pb-1 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  옥내 시험장
+                <p className="px-4 pt-3 pb-1 text-xs font-semibold text-purple-500 tracking-wider">
+                  인증 시험장
                 </p>
-                {siteHalls.map((hall) => {
-                  const eqs = getSpaceEquipment(data, hall.id);
+                {certSiteSpaces.map((space) => {
+                  const eqs = getSpaceEquipment(data, space.id);
                   return (
                     <SpaceRow
-                      key={hall.id}
-                      space={hall}
+                      key={space.id}
+                      space={space}
                       equipCount={eqs.length}
                       agingCount={eqs.filter((e) => computeStatus(e) === "aging").length}
-                      selected={selectedSpaceId === hall.id}
-                      onClick={() => setSelectedSpaceId(hall.id)}
+                      statusCounts={{
+                        new:     eqs.filter((e) => computeStatus(e) === "new").length,
+                        normal:  eqs.filter((e) => computeStatus(e) === "normal").length,
+                        aging:   eqs.filter((e) => computeStatus(e) === "aging").length,
+                        planned: eqs.filter((e) => computeStatus(e) === "planned").length,
+                      }}
+                      selected={selectedSpaceId === space.id}
+                      checked={checkedSpaceIds.has(space.id)}
+                      isOutdoor={yardIds.has(space.id)}
+                      onCheck={() => toggleChecked(space.id)}
+                      onClick={() => setSelectedSpaceId(space.id)}
                     />
                   );
                 })}
               </>
             )}
-            {siteYards.length > 0 && (
+            {prodSiteSpaces.length > 0 && (
               <>
-                <p className="px-4 pt-3 pb-1 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  옥외 시험장
+                <p className="px-4 pt-3 pb-1 text-xs font-semibold text-teal-500 tracking-wider">
+                  양산 시험장
                 </p>
-                {siteYards.map((yard) => {
-                  const eqs = getSpaceEquipment(data, yard.id);
+                {prodSiteSpaces.map((space) => {
+                  const eqs = getSpaceEquipment(data, space.id);
                   return (
                     <SpaceRow
-                      key={yard.id}
-                      space={yard}
+                      key={space.id}
+                      space={space}
                       equipCount={eqs.length}
                       agingCount={eqs.filter((e) => computeStatus(e) === "aging").length}
-                      selected={selectedSpaceId === yard.id}
-                      onClick={() => setSelectedSpaceId(yard.id)}
+                      statusCounts={{
+                        new:     eqs.filter((e) => computeStatus(e) === "new").length,
+                        normal:  eqs.filter((e) => computeStatus(e) === "normal").length,
+                        aging:   eqs.filter((e) => computeStatus(e) === "aging").length,
+                        planned: eqs.filter((e) => computeStatus(e) === "planned").length,
+                      }}
+                      selected={selectedSpaceId === space.id}
+                      checked={checkedSpaceIds.has(space.id)}
+                      isOutdoor={yardIds.has(space.id)}
+                      onCheck={() => toggleChecked(space.id)}
+                      onClick={() => setSelectedSpaceId(space.id)}
                     />
                   );
                 })}
@@ -523,6 +569,16 @@ export function FacilitiesView({ data, testsData }: { data: FacilityData; testsD
                     </span>
                   )}
                 </p>
+                {selectedIsCert && (
+                  <p className="text-xs text-purple-500 mt-1">
+                    인증시험 기준 소요기간 (준비 포함): Type ~3개월 · EQ ~6개월 · PQ ~14개월
+                  </p>
+                )}
+                {selectedIsProdOnly && (
+                  <p className="text-xs text-teal-500 mt-1">
+                    양산 처리량 기준: 5~10 드럼/일
+                  </p>
+                )}
               </div>
               <div className="flex-1 overflow-auto">
                 {selectedEquipment.length > 0 ? (
@@ -546,7 +602,7 @@ export function FacilitiesView({ data, testsData }: { data: FacilityData; testsD
       </div>
 
       {/* 간트 차트 */}
-      <GanttChart tests={tests} equipment={data.equipment} />
+      <GanttChart tests={tests} equipment={ganttEquipment} filteredCount={checkedSpaceIds.size} />
     </div>
   );
 }

@@ -8,6 +8,7 @@
     {
       "id": "test-001",
       "equipmentId": "gumi-dc1-eq-001",
+      "testCategory": "PQ",
       "projectName": "HVDC 525kV XLPE 인증",
       "sampleType": "cable",
       "sampleDescription": "525kV XLPE 1600mm² DC 케이블",
@@ -27,6 +28,7 @@
     {
       "id": "test-002",
       "equipmentId": "gumi-dc1-eq-002",
+      "testCategory": "PQ",
       "projectName": "HVDC 525kV XLPE 인증",
       "sampleType": "cable",
       "sampleDescription": "525kV XLPE 1600mm² DC 케이블 — 임펄스",
@@ -41,6 +43,7 @@
     {
       "id": "test-003",
       "equipmentId": "gumi-ac1-eq-001",
+      "testCategory": "EQ",
       "projectName": "345kV XLPE 접속재 IEC 인증",
       "sampleType": "accessory",
       "sampleDescription": "345kV XLPE 1200mm² 프리몰드 접속재",
@@ -59,6 +62,7 @@
     {
       "id": "test-004",
       "equipmentId": "gumi-hv-eq-003",
+      "testCategory": "Type",
       "projectName": "500kV XLPE 형식시험 (갱신)",
       "sampleType": "cable",
       "sampleDescription": "500kV XLPE 800mm² 케이블",
@@ -78,6 +82,7 @@
     {
       "id": "test-005",
       "equipmentId": "donghae-dc1-eq-001",
+      "testCategory": "PQ",
       "projectName": "해저 HVDC 320kV 개발시험",
       "sampleType": "cable",
       "sampleDescription": "320kV XLPE 1000mm² 해저케이블",
@@ -95,6 +100,7 @@
     {
       "id": "test-006",
       "equipmentId": "donghae-dc1-eq-002",
+      "testCategory": "PQ",
       "projectName": "해저 HVDC 320kV 개발시험",
       "sampleType": "cable",
       "sampleDescription": "320kV XLPE 1000mm² 해저케이블 — 임펄스",
@@ -109,6 +115,7 @@
     {
       "id": "test-007",
       "equipmentId": "donghae-sr1-eq-001",
+      "testCategory": "Type",
       "projectName": "154kV XLPE 접속재 형식시험",
       "sampleType": "accessory",
       "sampleDescription": "154kV XLPE 400mm² 열수축 접속재",
@@ -126,6 +133,7 @@
     {
       "id": "test-008",
       "equipmentId": "donghae-sr2-eq-001",
+      "testCategory": "양산",
       "projectName": "275kV XLPE 양산 품질시험",
       "sampleType": "cable",
       "sampleDescription": "275kV XLPE 1600mm² 케이블",
@@ -143,6 +151,7 @@
     {
       "id": "test-009",
       "equipmentId": "gumi-out-eq-001",
+      "testCategory": "EQ",
       "projectName": "154kV XLPE 케이블 옥외 장기내압",
       "sampleType": "cable",
       "sampleDescription": "154kV XLPE 325mm² 케이블 (드럼 2릴)",
@@ -157,6 +166,7 @@
     {
       "id": "test-010",
       "equipmentId": "donghae-xxl-eq-001",
+      "testCategory": "Type",
       "projectName": "500kV XLPE 해저케이블 XXL 형식시험",
       "sampleType": "cable",
       "sampleDescription": "500kV XLPE 2500mm² 해저케이블 (300m)",
@@ -171,6 +181,7 @@
     {
       "id": "test-011",
       "equipmentId": "gumi-dc2-eq-001",
+      "testCategory": "개발",
       "projectName": "HVDC 320kV 접속재 개발시험",
       "sampleType": "accessory",
       "sampleDescription": "320kV XLPE 1000mm² DC 프리몰드 접속재",
@@ -185,6 +196,7 @@
     {
       "id": "test-012",
       "equipmentId": "gumi-dc2-eq-001",
+      "testCategory": "개발",
       "projectName": "HVDC 200kV 긴급 사전검증",
       "sampleType": "cable",
       "sampleDescription": "200kV XLPE 500mm² DC 케이블 (병렬 진행)",
