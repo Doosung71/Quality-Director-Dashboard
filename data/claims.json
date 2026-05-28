@@ -1,0 +1,171 @@
+{
+  "claims": [
+    {
+      "id": "CLM-2026-001",
+      "title": "A사 변전소 케이블 피복 균열",
+      "customer": "A-Power",
+      "priority": "High",
+      "status": "Investigating",
+      "receivedAt": "2026-05-10",
+      "assignee": "김철수",
+      "description": "설치 3년차 현장에서 외피 균열 발생 보고됨. 현장 샘플 수거 중.",
+      "timeline": [
+        { "date": "2026-05-10", "action": "클레임 접수" },
+        { "date": "2026-05-12", "action": "현장 방문 및 샘플 수거" }
+      ]
+    },
+    {
+      "id": "CLM-2026-002",
+      "title": "B단지 초고압 케이블 부분방전",
+      "customer": "MetroGrid",
+      "priority": "High",
+      "status": "Action",
+      "receivedAt": "2026-05-02",
+      "assignee": "이영희",
+      "description": "정기 점검 중 부분방전 수치 이상 발견. 조인트 박스 교체 계획 수립 완료.",
+      "timeline": [
+        { "date": "2026-05-02", "action": "이상 보고 접수" },
+        { "date": "2026-05-05", "action": "정밀 진단 완료" },
+        { "date": "2026-05-08", "action": "교체 자재 발주" }
+      ]
+    },
+    {
+      "id": "CLM-2026-003",
+      "title": "해상풍력 프로젝트 C 단말재 누유",
+      "customer": "OceanEnergy",
+      "priority": "Mid",
+      "status": "Received",
+      "receivedAt": "2026-05-25",
+      "assignee": "박지민",
+      "description": "단말재 하부 미세 누유 흔적 발견 제보.",
+      "timeline": [
+        { "date": "2026-05-25", "action": "접수" }
+      ]
+    },
+    {
+      "id": "CLM-2026-004",
+      "title": "D공장 구내 배전선로 절연 파괴",
+      "customer": "IndustrialCorp",
+      "priority": "High",
+      "status": "Verification",
+      "receivedAt": "2026-04-15",
+      "assignee": "최동석",
+      "description": "낙뢰 후 절연 파괴 발생. 복구 완료 후 재발 방지 대책 검증 중.",
+      "timeline": [
+        { "date": "2026-04-15", "action": "사고 발생 및 접수" },
+        { "date": "2026-04-20", "action": "원인 분석 완료" },
+        { "date": "2026-05-10", "action": "복구 및 대책 적용" }
+      ]
+    },
+    {
+      "id": "CLM-2026-005",
+      "title": "E아파트 지하 주차장 케이블 소음",
+      "customer": "UrbanConst",
+      "priority": "Low",
+      "status": "Closed",
+      "receivedAt": "2026-03-20",
+      "assignee": "정미나",
+      "description": "부하 급증 시 고주파 소음 민원. 고정 밴드 보강으로 해결.",
+      "timeline": [
+        { "date": "2026-03-20", "action": "민원 접수" },
+        { "date": "2026-03-25", "action": "현장 점검" },
+        { "date": "2026-04-05", "action": "보강 작업 완료 및 종결" }
+      ]
+    },
+    {
+      "id": "CLM-2026-006",
+      "title": "F데이터센터 전력 공급 안정성 의문",
+      "customer": "DataCloud",
+      "priority": "Mid",
+      "status": "Investigating",
+      "receivedAt": "2026-05-18",
+      "assignee": "김철수",
+      "description": "전압 변동 시 케이블 발열량 측정 데이터 요청.",
+      "timeline": [
+        { "date": "2026-05-18", "action": "데이터 요청 접수" }
+      ]
+    },
+    {
+      "id": "CLM-2026-007",
+      "title": "G변전소 접속함 온도 상승",
+      "customer": "A-Power",
+      "priority": "High",
+      "status": "Action",
+      "receivedAt": "2026-05-12",
+      "assignee": "이영희",
+      "description": "열화상 카메라 측정 결과 접속부 온도 이상. 접속점 재체결 작업 예정.",
+      "timeline": [
+        { "date": "2026-05-12", "action": "이상 발견" },
+        { "date": "2026-05-15", "action": "현장 조사 완료" }
+      ]
+    },
+    {
+      "id": "CLM-2026-008",
+      "title": "H건설 현장 케이블 외관 손상",
+      "customer": "GlobalBuilder",
+      "priority": "Low",
+      "status": "Verification",
+      "receivedAt": "2026-05-05",
+      "assignee": "박지민",
+      "description": "하역 중 드럼 충격으로 외피 손상. 보수 테이핑 후 전기 성능 테스트 중.",
+      "timeline": [
+        { "date": "2026-05-05", "action": "손상 보고" },
+        { "date": "2026-05-07", "action": "보수 작업" }
+      ]
+    },
+    {
+      "id": "CLM-2026-009",
+      "title": "I플랜트 제어 케이블 신호 간섭",
+      "customer": "TechPlant",
+      "priority": "Mid",
+      "status": "Received",
+      "receivedAt": "2026-05-27",
+      "assignee": "정미나",
+      "description": "인접 동력선과의 간섭으로 인한 신호 노이즈 발생.",
+      "timeline": [
+        { "date": "2026-05-27", "action": "접수" }
+      ]
+    },
+    {
+      "id": "CLM-2026-010",
+      "title": "J국가 기간망 송전탑 지선 부식",
+      "customer": "MetroGrid",
+      "priority": "High",
+      "status": "Investigating",
+      "receivedAt": "2026-05-15",
+      "assignee": "최동석",
+      "description": "해안 지역 염해로 인한 지선 내부 부식 심화 우려.",
+      "timeline": [
+        { "date": "2026-05-15", "action": "정기 검사 보고" }
+      ]
+    },
+    {
+      "id": "CLM-2026-011",
+      "title": "K지식산업센터 변압기 연결부 아크",
+      "customer": "SmartCity",
+      "priority": "High",
+      "status": "Closed",
+      "receivedAt": "2024-12-10",
+      "assignee": "이영희",
+      "description": "단말 처리 불량으로 인한 미세 아크 발생. 전량 재작업 완료.",
+      "timeline": [
+        { "date": "2024-12-10", "action": "사고 접수" },
+        { "date": "2025-01-15", "action": "재발 방지 교육 및 종결" }
+      ]
+    },
+    {
+      "id": "CLM-2026-012",
+      "title": "L물류센터 저독성 케이블 인증 서류 요청",
+      "customer": "LogisHub",
+      "priority": "Low",
+      "status": "Closed",
+      "receivedAt": "2026-02-15",
+      "assignee": "박지민",
+      "description": "소방법 개정에 따른 추가 인증 자료 제출 요청.",
+      "timeline": [
+        { "date": "2026-02-15", "action": "요청 접수" },
+        { "date": "2026-02-20", "action": "자료 송부 완료" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+import type { Claim, ClaimStatus } from "@/types/claim";
+import { ClaimStatusBadge, ClaimPriorityBadge } from "./claim-badges";
+
+const COLUMNS: { status: ClaimStatus; label: string; color: string }[] = [
+  { status: "Received",      label: "접수",   color: "bg-slate-500" },
+  { status: "Investigating", label: "조사",   color: "bg-blue-500" },
+  { status: "Action",        label: "대책",   color: "bg-amber-500" },
+  { status: "Verification",  label: "검증",   color: "bg-purple-500" },
+  { status: "Closed",        label: "종결",   color: "bg-emerald-500" },
+];
+
+function ClaimCard({ claim, onClick }: { claim: Claim; onClick: () => void }) {
+  return (
+    <div 
+      onClick={onClick}
+      className="bg-white rounded-lg border border-slate-200 p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+    >
+      <div className="flex justify-between items-start mb-2">
+        <ClaimPriorityBadge priority={claim.priority} />
+        <span className="text-[10px] text-slate-400 font-mono">{claim.id}</span>
+      </div>
+      <h4 className="text-sm font-bold text-slate-800 leading-tight mb-1">{claim.title}</h4>
+      <p className="text-xs text-slate-500 mb-3">{claim.customer}</p>
+      
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500">
+            {claim.assignee[0]}
+          </div>
+          <span className="text-[10px] text-slate-500">{claim.assignee}</span>
+        </div>
+        <span className="text-[10px] text-slate-400">{claim.receivedAt.slice(5).replace("-", "/")}</span>
+      </div>
+    </div>
+  );
+}
+
+export function ClaimsKanban({ claims, onSelectClaim }: { claims: Claim[]; onSelectClaim: (id: string) => void }) {
+  return (
+    <div className="flex gap-4 overflow-x-auto pb-4 min-h-[600px]">
+      {COLUMNS.map((col) => {
+        const colClaims = claims.filter((c) => c.status === col.status);
+        return (
+          <div key={col.status} className="w-72 shrink-0 flex flex-col gap-3">
+            <div className="flex items-center justify-between px-2">
+              <div className="flex items-center gap-2">
+                <div className={cn("w-2 h-2 rounded-full", col.color)} />
+                <h3 className="text-sm font-semibold text-slate-700">{col.label}</h3>
+                <span className="bg-slate-100 text-slate-500 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  {colClaims.length}
+                </span>
+              </div>
+            </div>
+            
+            <div className="bg-slate-50/50 rounded-xl p-2 flex-1 flex flex-col gap-2 border border-dashed border-slate-200">
+              {colClaims.map((claim) => (
+                <ClaimCard 
+                  key={claim.id} 
+                  claim={claim} 
+                  onClick={() => onSelectClaim(claim.id)} 
+                />
+              ))}
+              {colClaims.length === 0 && (
+                <div className="flex-1 flex items-center justify-center border border-dashed border-slate-200 rounded-lg">
+                  <span className="text-xs text-slate-300">항목 없음</span>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
