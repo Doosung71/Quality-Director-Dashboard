@@ -122,13 +122,64 @@ Sites (사업장)
 | 시기 | 작업 | 상태 |
 |------|------|------|
 | 5월 | 셋업 + 공통 레이아웃 + 시드 구조 + ① 시험장·시험 현황 | ✅ 완료 (일정 앞당김) |
-| 6월 | ② 클레임 트래커 (칸반 5단계 + 시드 12건) | 🔲 예정 |
+| 5월 말 | ② 클레임 트래커 (칸반 5단계 + 시드 12건) + 역할 인증 + Vercel 배포 | ✅ 완료 (2026-05-29) |
+| 6월 | ③ 협력업체 카드 풀 (탭 3개 + 시드 18건) | 🔲 예정 |
 | 7월 | ③ 협력업체 카드 풀 (탭 3개 + 시드 18건) | 🔲 예정 |
 | 8월 초중 | ④ 인사·면담 + ⑤ 외부정보 + 통합 메인 대시보드 | 🔲 예정 |
 | 8월 말 | 모바일 다듬기, 시연 리허설 | 🔲 예정 |
 | 9월 초 | 품질전략기능회의 시연 | 🔲 D-day |
 
 ## 7. 구현 완료 내역
+
+### 역할 기반 인증 시스템 + Vercel 배포 (2026-05-29)
+
+**인증 플로우:**
+```
+/register → status: PENDING → /pending 대기
+관리자(/admin/users) 승인 + 역할 부여
+재로그인 → 대시보드 접근
+```
+
+**역할 3단계:** `PRACTITIONER(실무자)` / `TEAM_LEAD(팀장)` / `DIRECTOR(임원)`
+
+**User 모델 주요 필드:** role, status(PENDING/ACTIVE/RESTRICTED/BANNED), department, employeeId
+
+**추가 파일:**
+```
+app/login/page.tsx                     로그인
+app/register/page.tsx                  가입 신청
+app/pending/page.tsx                   승인 대기
+app/banned/page.tsx                    접근 제한
+app/admin/users/page.tsx               관리자 유저 관리
+components/layout/role-gate.tsx        역할별 렌더링 게이트
+lib/session-guard.ts                   API 세션 검사
+auth.ts / auth.config.ts               NextAuth v5 설정
+middleware.ts                          Edge 미들웨어
+```
+
+**배포:** https://quality-dashboard-flax.vercel.app (Vercel Production)
+- DATABASE_URL, AUTH_SECRET 환경 변수 설정 완료
+- 팀원 회원가입 → 관리자 승인 플로우 동작
+
+**핵심 버그 수정:** `auth.config.ts`에 session 콜백 추가
+- 미들웨어는 auth.config.ts만 사용 → token.status가 session.user에 매핑 안 됨
+- → 전원 /banned 리다이렉트 버그 → session 콜백으로 수정
+
+---
+
+### ② 고객 클레임 트래커 (2026-05)
+
+**파일 구조:**
+```
+types/claim.ts
+data/claims.json                       시드 12건
+components/claims/claims-kanban.tsx    칸반 5단계
+components/claims/claims-kpi.tsx       KPI 카드
+components/claims/claim-detail.tsx     상세 패널
+app/(dashboard)/claims/page.tsx
+```
+
+---
 
 ### ① 시험장·시험 현황 (2026-05-12)
 
@@ -145,8 +196,8 @@ app/(dashboard)/facilities/page.tsx            서버 컴포넌트
 app/(dashboard)/
   page.tsx            통합 메인 대시보드 (뼈대)
   facilities/         ✅ 완료
-  claims/             🔲 6월
-  vendors/            🔲 7월
+  claims/             ✅ 완료
+  vendors/            🔲 6월
   hr/                 🔲 8월
   intelligence/       🔲 8월
 ```
