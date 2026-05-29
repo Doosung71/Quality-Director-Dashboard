@@ -71,7 +71,7 @@ export function ClaimsView({ data }: { data: ClaimsData }) {
     <div className="space-y-6 relative">
       <ClaimsKpi claims={claims} />
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm overflow-x-auto">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h2 className="text-lg font-semibold text-slate-800">클레임 진행 보드</h2>
