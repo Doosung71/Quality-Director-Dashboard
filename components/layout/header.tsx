@@ -1,7 +1,12 @@
-"use client";
+"use client"
 
-import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation"
+import { signOut } from "next-auth/react"
+import { Menu, LogOut } from "lucide-react"
+import { RoleBadge } from "@/components/layout/role-gate"
+import { displayName } from "@/lib/display-name"
+import type { Session } from "next-auth"
+import type { Role } from "@/lib/generated/prisma/client"
 
 const titles: Record<string, string> = {
   "/": "메인 대시보드",
@@ -10,26 +15,32 @@ const titles: Record<string, string> = {
   "/vendors": "협력업체",
   "/hr": "인사·면담",
   "/intelligence": "외부 정보",
-};
-
-interface HeaderProps {
-  onMenuOpen: () => void;
 }
 
-export function Header({ onMenuOpen }: HeaderProps) {
-  const pathname = usePathname();
-  const title = titles[pathname] ?? "대시보드";
+export function Header({ onMenuOpen, session }: { onMenuOpen: () => void; session: Session }) {
+  const pathname = usePathname()
+  const title = titles[pathname] ?? "대시보드"
+  const name = displayName({ nickname: session.user.nickname, name: session.user.name })
+  const role = session.user.role as Role
 
   return (
     <header className="h-14 border-b border-slate-200 bg-white flex items-center px-4 lg:px-6 gap-3 shrink-0">
-      <button
-        onClick={onMenuOpen}
+      <button onClick={onMenuOpen}
         className="lg:hidden p-2 -ml-1 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-        aria-label="메뉴 열기"
-      >
+        aria-label="메뉴 열기">
         <Menu className="w-5 h-5" />
       </button>
-      <h1 className="text-sm font-semibold text-slate-800">{title}</h1>
+      <h1 className="text-sm font-semibold text-slate-800 flex-1">{title}</h1>
+      <div className="flex items-center gap-3">
+        <RoleBadge role={role} />
+        <span className="text-sm text-slate-600 hidden sm:block">{name}</span>
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+          title="로그아웃">
+          <LogOut className="w-4 h-4" />
+        </button>
+      </div>
     </header>
-  );
+  )
 }

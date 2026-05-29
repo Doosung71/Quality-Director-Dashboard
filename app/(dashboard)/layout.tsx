@@ -1,25 +1,14 @@
-"use client";
+import { auth } from "@/auth"
+import { redirect } from "next/navigation"
+import { DashboardShell } from "@/components/layout/dashboard-shell"
 
-import { useState } from "react";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Header } from "@/components/layout/header";
-
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth()
+  if (!session) redirect("/login")
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-slate-900/50 z-30 lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-      <Sidebar isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
-      <div className="lg:ml-56 flex flex-col min-h-screen">
-        <Header onMenuOpen={() => setIsMobileMenuOpen(true)} />
-        <main className="flex-1 p-4 lg:p-6">{children}</main>
-      </div>
-    </div>
-  );
+    <DashboardShell session={session}>
+      {children}
+    </DashboardShell>
+  )
 }

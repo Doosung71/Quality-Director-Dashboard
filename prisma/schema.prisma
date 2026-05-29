@@ -1,0 +1,40 @@
+// Quality Dashboard — Prisma Schema
+// TRA와 동일한 Neon DB 공유 — User 모델만 사용
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String     @id @default(cuid())
+  name            String
+  email           String     @unique
+  passwordHash    String
+  role            Role
+  status          UserStatus @default(PENDING)
+  statusReason    String?
+  restrictedUntil DateTime?
+  department      String?
+  employeeId      String?
+  phone           String?
+  nickname        String?
+  createdAt       DateTime   @default(now())
+}
+
+enum Role {
+  PRACTITIONER // 실무자
+  TEAM_LEAD    // 팀장
+  DIRECTOR     // 부문장/임원
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  RESTRICTED
+  BANNED
+}
