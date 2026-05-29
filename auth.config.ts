@@ -6,7 +6,7 @@ export const authConfig = {
   pages: { signIn: "/login" },
   callbacks: {
     session({ session, token }) {
-      const u = session.user as Record<string, unknown>
+      const u = session.user as unknown as Record<string, unknown>
       u.status = token.status ?? null
       u.restrictedUntil = token.restrictedUntil ?? null
       return session
