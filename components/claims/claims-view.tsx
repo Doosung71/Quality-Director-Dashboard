@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { ClaimsData, Claim, ClaimPriority, ClaimStatus } from "@/types/claim";
+
+const VALID_PRIORITIES: (ClaimPriority | "All")[] = ["All", "High", "Mid", "Low"];
 import { ClaimsKpi } from "./claims-kpi";
 import { ClaimsKanban } from "./claims-kanban";
 import { ClaimDetail } from "./claim-detail";
@@ -12,23 +15,45 @@ const STAGE_LABELS: Record<ClaimStatus, string> = {
 };
 
 export function ClaimsView({ data }: { data: ClaimsData }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const searchTerm = searchParams.get("q") ?? "";
+  const rawPriority = searchParams.get("priority");
+  const priorityFilter: ClaimPriority | "All" = VALID_PRIORITIES.includes(rawPriority as ClaimPriority | "All")
+    ? (rawPriority as ClaimPriority | "All")
+    : "All";
+
   const [claims, setClaims] = useState<Claim[]>(data.claims);
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [priorityFilter, setPriorityFilter] = useState<ClaimPriority | "All">("All");
+
+  const setSearchTerm = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set("q", value);
+    else params.delete("q");
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
+  const setPriorityFilter = (value: ClaimPriority | "All") => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value !== "All") params.set("priority", value);
+    else params.delete("priority");
+    router.replace(`${pathname}?${params.toString()}`);
+  };
 
   const handleMoveStage = (id: string, newStatus: ClaimStatus) => {
     const d = new Date();
     const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-    setClaims(prev => prev.map(c =>
-      c.id === id
-        ? {
-            ...c,
-            status: newStatus,
-            timeline: [...(c.timeline ?? []), { date: today, action: `단계 이동 → ${STAGE_LABELS[newStatus]}` }],
-          }
-        : c
-    ));
+    setClaims(prev => prev.map(c => {
+      if (c.id !== id) return c;
+      return {
+        ...c,
+        status: newStatus,
+        closedAt: newStatus === "Closed" ? today : undefined,
+        timeline: [...(c.timeline ?? []), { date: today, action: `단계 이동 → ${STAGE_LABELS[newStatus]}` }],
+      };
+    }));
   };
 
   const filteredClaims = claims.filter(c => {
@@ -45,7 +70,7 @@ export function ClaimsView({ data }: { data: ClaimsData }) {
   return (
     <div className="space-y-6 relative">
       <ClaimsKpi claims={claims} />
-      
+
       <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
@@ -54,14 +79,13 @@ export function ClaimsView({ data }: { data: ClaimsData }) {
               각 단계별 적체 건수를 확인하고, 지연 이슈를 집중 관리하십시오.
             </p>
           </div>
-          
+
           <div className="flex items-center gap-3">
-            {/* Search */}
             <div className="relative">
               <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <input 
+              <input
                 type="text"
                 placeholder="클레임명, 고객사 검색..."
                 value={searchTerm}
@@ -70,7 +94,6 @@ export function ClaimsView({ data }: { data: ClaimsData }) {
               />
             </div>
 
-            {/* Priority Filter */}
             <div className="flex bg-slate-100 p-1 rounded-lg">
               {(["All", "High", "Mid", "Low"] as const).map((p) => (
                 <button
@@ -78,8 +101,8 @@ export function ClaimsView({ data }: { data: ClaimsData }) {
                   onClick={() => setPriorityFilter(p)}
                   className={cn(
                     "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
-                    priorityFilter === p 
-                      ? "bg-white text-slate-900 shadow-sm" 
+                    priorityFilter === p
+                      ? "bg-white text-slate-900 shadow-sm"
                       : "text-slate-500 hover:text-slate-700"
                   )}
                 >
@@ -90,15 +113,14 @@ export function ClaimsView({ data }: { data: ClaimsData }) {
           </div>
         </div>
 
-        <ClaimsKanban 
-          claims={filteredClaims} 
-          onSelectClaim={(id) => setSelectedClaimId(id)} 
+        <ClaimsKanban
+          claims={filteredClaims}
+          onSelectClaim={(id) => setSelectedClaimId(id)}
         />
       </div>
 
-      {/* Detail Sidebar Overlay */}
       {selectedClaimId && (
-        <div 
+        <div
           className="fixed inset-0 bg-slate-900/20 backdrop-blur-[2px] z-40"
           onClick={() => setSelectedClaimId(null)}
         />

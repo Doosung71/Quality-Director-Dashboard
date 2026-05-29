@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import type { Claim } from "@/types/claim";
 
 interface KpiItem {
   label: string;
@@ -27,48 +28,62 @@ function KpiCard({ title, value, color = "text-slate-900", subItems }: { title: 
   );
 }
 
-import type { Claim } from "@/types/claim";
-
 export function ClaimsKpi({ claims }: { claims: Claim[] }) {
+  const total = claims.length;
   const unclosed = claims.filter(c => c.status !== "Closed");
   const highPriorityUnclosed = unclosed.filter(c => c.priority === "High").length;
-  
-  // 리드타임 계산 (단순화: 오늘 - 접수일)
-  const today = new Date();
-  const closedClaims = claims.filter(c => c.status === "Closed");
-  const avgLeadTime = closedClaims.length > 0 
-    ? Math.round(closedClaims.reduce((acc, c) => {
-        const received = new Date(c.receivedAt);
-        // 실제 종결일이 데이터에 없으므로, 데이터셋의 종결 예시로 계산하거나 
-        // PoC용 고정값을 사용. 여기서는 시연용으로 14일 고정값 + 약간의 랜덤 부여
-        return acc + 14; 
-      }, 0) / closedClaims.length)
+  const unclosedRate = total > 0 ? Math.round((unclosed.length / total) * 100) : 0;
+
+  // 평균 처리 리드타임: closedAt - receivedAt (일수)
+  const closedWithDate = claims.filter(c => c.status === "Closed" && c.closedAt);
+  const avgLeadTime = closedWithDate.length > 0
+    ? Math.round(
+        closedWithDate.reduce((acc, c) => {
+          const days = Math.floor(
+            (new Date(c.closedAt!).getTime() - new Date(c.receivedAt).getTime()) / 86400000
+          );
+          return acc + days;
+        }, 0) / closedWithDate.length
+      )
     : 0;
+
+  // 이번 달 클로징: closedAt 기준
+  const now = new Date();
+  const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const thisMonthClosed = claims.filter(c => c.closedAt?.startsWith(thisMonth)).length;
+
+  // 종결률: Closed / 전체
+  const closedCount = claims.filter(c => c.status === "Closed").length;
+  const closureRate = total > 0 ? Math.round((closedCount / total) * 100) : 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <KpiCard 
-        title="진행 중 클레임" 
-        value={`${unclosed.length}건`} 
+      <KpiCard
+        title="진행 중 클레임"
+        value={`${unclosed.length}건`}
         color="text-blue-600"
         subItems={[
           { label: "High Priority", value: `${highPriorityUnclosed}건`, color: "text-red-500" },
-          { label: "전체 대비", value: `${Math.round((unclosed.length / claims.length) * 100)}%` }
+          { label: "전체 대비", value: total > 0 ? `${unclosedRate}%` : "-" }
         ]}
       />
-      <KpiCard 
-        title="평균 처리 리드타임" 
-        value={`${avgLeadTime}일`} 
+      <KpiCard
+        title="평균 처리 리드타임"
+        value={closedWithDate.length > 0 ? `${avgLeadTime}일` : "-"}
         subItems={[
-          { label: "전월 대비", value: "-2일", color: "text-emerald-500" },
+          { label: "종결 건수", value: `${closedWithDate.length}건` },
           { label: "목표", value: "10일 이내" }
         ]}
       />
-      <KpiCard 
-        title="이번 달 클로징" 
-        value={`${claims.filter(c => c.status === "Closed" && c.receivedAt.startsWith("2026-05")).length}건`}
+      <KpiCard
+        title="이번 달 클로징"
+        value={`${thisMonthClosed}건`}
         subItems={[
-          { label: "성공률", value: "85%", color: "text-emerald-500" }
+          {
+            label: "종결률",
+            value: total > 0 ? `${closureRate}%` : "-",
+            color: closureRate >= 50 ? "text-emerald-500" : "text-amber-500"
+          }
         ]}
       />
     </div>

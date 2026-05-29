@@ -1,4 +1,12 @@
-export type ClaimStatus = "Received" | "Investigating" | "Action" | "Verification" | "Closed";
+export const CLAIM_STATUSES = [
+  "Received",
+  "Investigating",
+  "Action",
+  "Verification",
+  "Closed",
+] as const;
+
+export type ClaimStatus = (typeof CLAIM_STATUSES)[number];
 export type ClaimPriority = "Low" | "Mid" | "High";
 
 export interface ClaimTimelineItem {
@@ -13,6 +21,7 @@ export interface Claim {
   priority: ClaimPriority;
   status: ClaimStatus;
   receivedAt: string;
+  closedAt?: string;
   assignee: string;
   description: string;
   timeline?: ClaimTimelineItem[];

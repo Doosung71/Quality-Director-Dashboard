@@ -64,6 +64,7 @@
       "priority": "Low",
       "status": "Closed",
       "receivedAt": "2026-03-20",
+      "closedAt": "2026-04-05",
       "assignee": "정미나",
       "description": "부하 급증 시 고주파 소음 민원. 고정 밴드 보강으로 해결.",
       "timeline": [
@@ -146,6 +147,7 @@
       "priority": "High",
       "status": "Closed",
       "receivedAt": "2024-12-10",
+      "closedAt": "2025-01-15",
       "assignee": "이영희",
       "description": "단말 처리 불량으로 인한 미세 아크 발생. 전량 재작업 완료.",
       "timeline": [
@@ -160,6 +162,7 @@
       "priority": "Low",
       "status": "Closed",
       "receivedAt": "2026-02-15",
+      "closedAt": "2026-02-20",
       "assignee": "박지민",
       "description": "소방법 개정에 따른 추가 인증 자료 제출 요청.",
       "timeline": [

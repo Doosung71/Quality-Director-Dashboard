@@ -1,9 +1,6 @@
-import { promises as fs } from "fs";
-import path from "path";
 import type { ClaimsData } from "@/types/claim";
+import raw from "./claims.json";
 
-export async function getClaimsData(): Promise<ClaimsData> {
-  const filePath = path.join(process.cwd(), "data", "claims.json");
-  const jsonData = await fs.readFile(filePath, "utf-8");
-  return JSON.parse(jsonData);
-}
+// JSON imports widen literal types, so satisfies can't verify union fields.
+// Values are validated against ClaimsData shape manually; cast is intentional.
+export const claimsData = raw as unknown as ClaimsData;

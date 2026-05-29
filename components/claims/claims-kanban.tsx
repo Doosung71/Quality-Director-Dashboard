@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import type { Claim, ClaimStatus } from "@/types/claim";
-import { ClaimStatusBadge, ClaimPriorityBadge } from "./claim-badges";
+import { ClaimPriorityBadge } from "./claim-badges";
 
 const COLUMNS: { status: ClaimStatus; label: string; color: string }[] = [
   { status: "Received",      label: "접수",   color: "bg-slate-500" },
