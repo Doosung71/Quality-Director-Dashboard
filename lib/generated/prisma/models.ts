@@ -9,4 +9,6 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/Feedback'
+export type * from './models/FeedbackReply'
 export type * from './commonInputTypes'

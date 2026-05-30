@@ -24,6 +24,30 @@ model User {
   phone           String?
   nickname        String?
   createdAt       DateTime   @default(now())
+
+  feedbacks       Feedback[]
+  feedbackReplies FeedbackReply[]
+}
+
+model Feedback {
+  id        String          @id @default(cuid())
+  author    User            @relation(fields: [authorId], references: [id])
+  authorId  String
+  content   String
+  imageUrls String?
+  createdAt DateTime        @default(now())
+
+  replies   FeedbackReply[]
+}
+
+model FeedbackReply {
+  id         String   @id @default(cuid())
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   String
+  content    String
+  createdAt  DateTime @default(now())
 }
 
 enum Role {
